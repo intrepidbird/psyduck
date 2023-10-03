@@ -13,7 +13,7 @@ bot_token = 'your-bot-token'
 
 intents = Intents.all()
 intents.messages = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 
 status = cycle(['psyduck orz', 'I am a bot', 'Ask me anything'])
 
