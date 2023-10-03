@@ -17,6 +17,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 status = cycle(['psyduck orz', 'I am a bot', 'Ask me anything'])
 
+
 # Error handling
 @bot.event
 async def on_command_error(ctx, error):
@@ -27,15 +28,22 @@ async def on_command_error(ctx, error):
     else:
         await ctx.send(f"An error occurred: {error}")
 
+
 @bot.event
 async def on_ready():
-    change_status.start()
     print("[+] Psyduck is ready")
+
+
+@bot.event
+async def on_connect():
+    change_status.start()
+
 
 @tasks.loop(seconds=10)
 async def change_status():
     new_status = next(status)
     await bot.change_presence(activity=discord.Game(new_status))
+
 
 @bot.command(name='orz')
 async def orz(ctx, *, question: str):
@@ -50,6 +58,7 @@ async def orz(ctx, *, question: str):
     except Exception as e:
         await ctx.send('Psyduck encountered an error.')
 
+
 @bot.command(name='ai')
 async def gpt3(ctx, *, prompt: str):
     try:
@@ -57,6 +66,7 @@ async def gpt3(ctx, *, prompt: str):
         await ctx.send(response.choices[0].text.strip())
     except Exception as e:
         await ctx.send('Psyduck encountered an error.')
+
 
 # Custom help command
 @bot.command(name='help')
@@ -75,6 +85,7 @@ async def roll_dice(ctx, sides: int):
     else:
         result = random.randint(1, sides)
         await ctx.send(f"Rolled a {sides}-sided dice and got: {result}")
+
 
 # Run the bot
 bot.run(bot_token)
