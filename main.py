@@ -1,10 +1,13 @@
-import discord
-from discord import Intents
-from discord.ext import commands, tasks
+from typing import Any
 import wolframalpha
 import openai
 import random
 import asyncio
+
+import discord
+from discord import Intents
+from discord.ext import commands, tasks
+
 
 # Replace these with your actual API keys and bot token
 openai.api_key = 'your-openai-api-key'
@@ -13,9 +16,29 @@ bot_token = 'your-bot-token'
 
 intents = Intents.all()
 intents.messages = True
-bot = commands.Bot(command_prefix='!', intents=intents)
 
 status = cycle(['psyduck orz', 'I am a bot', 'Ask me anything'])
+
+
+class PsyduckHelpCommand(commands.HelpCommand):
+
+    def __init__(self, **options: Any) -> None:
+        super().__init__(**options)
+
+    async def send_bot_help(self, mapping: Any):
+        embed = discord.Embed(title="Psyduck Bot Commands", description="List of available commands:", color=0x00ff00)
+        embed.add_field(name="!orz <question>", value="Ask a question to Wolfram Alpha.", inline=False)
+        embed.add_field(name="!ai <prompt>", value="Generate text using GPT-3 AI.", inline=False)
+        embed.add_field(name="!roll <sides>", value="Roll a dice with the specified number of sides.", inline=False)
+
+        await self.context.send(embed=embed)
+
+
+bot = commands.Bot(
+    command_prefix='!',
+    intents=intents,
+    help_command=PsyduckHelpCommand(),
+)
 
 
 # Error handling
@@ -68,15 +91,6 @@ async def gpt3(ctx, *, prompt: str):
         await ctx.send('Psyduck encountered an error.')
 
 
-# Custom help command
-@bot.command(name='help')
-async def help_command(ctx):
-    embed = discord.Embed(title="Psyduck Bot Commands", description="List of available commands:", color=0x00ff00)
-    embed.add_field(name="!orz <question>", value="Ask a question to Wolfram Alpha.", inline=False)
-    embed.add_field(name="!ai <prompt>", value="Generate text using GPT-3 AI.", inline=False)
-    embed.add_field(name="!roll <sides>", value="Roll a dice with the specified number of sides.", inline=False)
-    await ctx.send(embed=embed)
-
 # Command for rolling a dice
 @bot.command(name='roll')
 async def roll_dice(ctx, sides: int):
@@ -87,5 +101,6 @@ async def roll_dice(ctx, sides: int):
         await ctx.send(f"Rolled a {sides}-sided dice and got: {result}")
 
 
-# Run the bot
-bot.run(bot_token)
+if __name__ == '__main__':
+    # Run the bot
+    bot.run(bot_token)
